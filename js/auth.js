@@ -3,7 +3,7 @@
  * Handles login, logout, session management, and API communication
  */
 
-const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbyKLtvOKIkbMQm0S1M3wwh4-0kZLTJ6lWnijDlZ0eQKqRVhT40Ry1WTd4bOhqNCOXqB/exec';
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxV3HkBA2mNkrWLL3tHviMJGwzIzucZXqoh6xZa9iYR9ToUFIkuDFKGwBkqgJ0kqXGp/exec';
 
 class AuthManager {
     constructor() {

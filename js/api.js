@@ -5,7 +5,7 @@
 
 class ApiManager {
     constructor() {
-        this.baseUrl = 'https://script.google.com/macros/s/AKfycbyKLtvOKIkbMQm0S1M3wwh4-0kZLTJ6lWnijDlZ0eQKqRVhT40Ry1WTd4bOhqNCOXqB/exec';
+        this.baseUrl = 'https://script.google.com/macros/s/AKfycbxV3HkBA2mNkrWLL3tHviMJGwzIzucZXqoh6xZa9iYR9ToUFIkuDFKGwBkqgJ0kqXGp/exec';
         this.retryAttempts = 3;
         this.retryDelay = 1000;
     }

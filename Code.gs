@@ -753,10 +753,26 @@ function doGet(e) {
     message: 'SSC Collection Backend API',
     version: '2.0',
     timestamp: new Date().toISOString()
-  })).setMimeType(ContentService.MimeType.JSON);
+  }))
+  .setMimeType(ContentService.MimeType.JSON)
+  .setHeaders({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  });
 }
 
 function doPost(e) {
+  // Handle CORS preflight request
+  if (e.parameter && e.parameter.method === 'OPTIONS') {
+    return ContentService.createTextOutput('')
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
+  }
+  
   try {
     var raw = e.postData && e.postData.contents ? e.postData.contents : '{}';
     var payload = JSON.parse(raw);
@@ -854,7 +870,13 @@ function createSuccessResponse(data) {
     status: 'ok',
     data: data,
     timestamp: new Date().toISOString()
-  })).setMimeType(ContentService.MimeType.JSON);
+  }))
+  .setMimeType(ContentService.MimeType.JSON)
+  .setHeaders({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  });
 }
 
 function createErrorResponse(message) {
@@ -862,7 +884,13 @@ function createErrorResponse(message) {
     status: 'error',
     message: message,
     timestamp: new Date().toISOString()
-  })).setMimeType(ContentService.MimeType.JSON);
+  }))
+  .setMimeType(ContentService.MimeType.JSON)
+  .setHeaders({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  });
 }
 
 function validateSession(token) {
