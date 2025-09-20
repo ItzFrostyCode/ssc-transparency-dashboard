@@ -264,6 +264,8 @@
             resultDiv.innerHTML = '⏳ Connecting to server...';
             
             try {
+                console.log('🔧 DEBUG: Starting login request...', { username, API_URL });
+                
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
@@ -276,11 +278,14 @@
                     })
                 });
                 
+                console.log('🔧 DEBUG: Response received:', response.status, response.statusText);
+                
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const result = await response.json();
+                console.log('🔧 DEBUG: API Result:', result);
                 
                 if (result.status === 'ok') {
                     // Store session
@@ -316,7 +321,9 @@
                 }
                 
             } catch (error) {
-                console.error('Login error:', error);
+                console.error('🔧 DEBUG: Login error details:', error);
+                console.error('🔧 DEBUG: Error name:', error.name);
+                console.error('🔧 DEBUG: Error message:', error.message);
                 
                 if (error.name === 'TypeError' && error.message.includes('fetch')) {
                     showResult('error', `
