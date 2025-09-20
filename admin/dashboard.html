@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC Transparency - Admin Console</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="hamburger-btn" id="btn_hamburger_toggle">☰</button>
+                <div class="logo-title" id="top_title">
+                    🏛️ SSC Transparency — Admin Console
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <div class="user-info">
+                    <span id="top_user">Loading...</span>
+                    <div class="last-sync" id="top_lastSync">Last Sync: Loading...</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar" id="sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-section="dashboard" id="nav_admin_dashboard">
+                            <span class="nav-icon">📊</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="sections" id="nav_admin_sections">
+                            <span class="nav-icon">🏫</span>
+                            Sections
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="treasurers" id="nav_admin_treasurers">
+                            <span class="nav-icon">👥</span>
+                            Treasurers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="students" id="nav_admin_students">
+                            <span class="nav-icon">🎓</span>
+                            Students
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="reports" id="nav_admin_reports">
+                            <span class="nav-icon">📈</span>
+                            Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="audit" id="nav_admin_audit">
+                            <span class="nav-icon">📋</span>
+                            Audit Log
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="settings" id="nav_admin_settings">
+                            <span class="nav-icon">⚙️</span>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Content Area -->
+            <main class="content-area" id="contentArea">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="page-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Admin Dashboard</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="refreshDashboard()">
+                                <span>🔄</span>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Grid -->
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Sections</div>
+                            <div class="stat-value" id="totalSections">0</div>
+                            <div class="stat-change positive">
+                                <span>📈</span>
+                                <span id="sectionsChange">Active</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Students</div>
+                            <div class="stat-value" id="totalStudents">0</div>
+                            <div class="stat-change positive">
+                                <span>👥</span>
+                                <span id="studentsChange">Enrolled</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Active Treasurers</div>
+                            <div class="stat-value" id="activeTreasurers">0</div>
+                            <div class="stat-change positive">
+                                <span>✅</span>
+                                <span id="treasurersChange">Online</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Collections</div>
+                            <div class="stat-value" id="totalCollections">₱0</div>
+                            <div class="stat-change positive">
+                                <span>💰</span>
+                                <span id="collectionsChange">This Month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="page-section">
+                        <h3>Quick Actions</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="showCreateSectionModal()">
+                                <span>➕</span>
+                                Create Section
+                            </button>
+                            <button class="btn btn-primary" onclick="showCreateTreasurerModal()">
+                                <span>👤</span>
+                                Add Treasurer
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportSystemReport()">
+                                <span>📊</span>
+                                Export Report
+                            </button>
+                            <button class="btn btn-secondary" onclick="showAuditLog()">
+                                <span>📋</span>
+                                View Audit Log
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="page-section">
+                        <h3>Recent Activity</h3>
+                        <div id="recentActivity">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                Loading recent activity...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sections Section -->
+                <div id="sections-section" class="page-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Section Management</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="showCreateSectionModal()">
+                                <span>➕</span>
+                                Create Section
+                            </button>
+                            <button class="btn btn-secondary" onclick="refreshSections()">
+                                <span>🔄</span>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="sectionSearch" placeholder="Search sections...">
+                            <select class="form-control" id="departmentFilter">
+                                <option value="">All Departments</option>
+                                <option value="ICT">ICT</option>
+                                <option value="HTM">HTM</option>
+                                <option value="SHS">SHS</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Sections Table -->
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Section Name</th>
+                                    <th>Department</th>
+                                    <th>Students</th>
+                                    <th>Expected</th>
+                                    <th>Collected</th>
+                                    <th>Progress</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sectionsTableBody">
+                                <tr>
+                                    <td colspan="8" class="loading">Loading sections...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Treasurers Section -->
+                <div id="treasurers-section" class="page-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Treasurer Management</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="showCreateTreasurerModal()">
+                                <span>👤</span>
+                                Add Treasurer
+                            </button>
+                            <button class="btn btn-secondary" onclick="refreshTreasurers()">
+                                <span>🔄</span>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Treasurers Table -->
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
+                                    <th>Department</th>
+                                    <th>Section</th>
+                                    <th>Start Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="treasurersTableBody">
+                                <tr>
+                                    <td colspan="7" class="loading">Loading treasurers...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Students Section -->
+                <div id="students-section" class="page-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Student Management</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-secondary" onclick="refreshStudents()">
+                                <span>🔄</span>
+                                Refresh
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportStudentData()">
+                                <span>📊</span>
+                                Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="studentSearch" placeholder="Search students...">
+                            <select class="form-control" id="studentSectionFilter">
+                                <option value="">All Sections</option>
+                            </select>
+                            <select class="form-control" id="studentStatusFilter">
+                                <option value="">All Status</option>
+                                <option value="PAID">Fully Paid</option>
+                                <option value="PARTIAL">Partial Payment</option>
+                                <option value="NOT_PAID">Not Paid</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Students Table -->
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Student No</th>
+                                    <th>Full Name</th>
+                                    <th>Section</th>
+                                    <th>Expected</th>
+                                    <th>Paid</th>
+                                    <th>Remaining</th>
+                                    <th>Status</th>
+                                    <th>Last Payment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                                <tr>
+                                    <td colspan="9" class="loading">Loading students...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reports Section -->
+                <div id="reports-section" class="page-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Reports & Analytics</h2>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Overall Progress</div>
+                            <div class="stat-value" id="overallProgress">0%</div>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="overallProgressBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Collection Rate</div>
+                            <div class="stat-value" id="collectionRate">0%</div>
+                            <div class="stat-change positive">
+                                <span>📈</span>
+                                <span>This Month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="generateSystemReport()">
+                            <span>📊</span>
+                            Generate System Report
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportCollectionData()">
+                            <span>💾</span>
+                            Export Collection Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="printSummaryReport()">
+                            <span>🖨️</span>
+                            Print Summary
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Audit Log Section -->
+                <div id="audit-section" class="page-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Audit Log</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-secondary" onclick="refreshAuditLog()">
+                                <span>🔄</span>
+                                Refresh
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportAuditLog()">
+                                <span>📊</span>
+                                Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Audit Log Filter -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select class="form-control" id="auditActionFilter">
+                                <option value="">All Actions</option>
+                                <option value="LOGIN">Login</option>
+                                <option value="LOGOUT">Logout</option>
+                                <option value="SECTION_CREATE">Section Created</option>
+                                <option value="PAYMENT_RECORD">Payment Recorded</option>
+                                <option value="TREASURER_CREATE">Treasurer Created</option>
+                            </select>
+                            <input type="text" class="form-control" id="auditUserFilter" placeholder="Filter by user...">
+                        </div>
+                    </div>
+
+                    <!-- Audit Log Table -->
+                    <div class="table-container">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Table</th>
+                                    <th>Record ID</th>
+                                    <th>Details</th>
+                                    <th>IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogTableBody">
+                                <tr>
+                                    <td colspan="7" class="loading">Loading audit log...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings-section" class="page-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">System Settings</h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Default Expected Amount per Student</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₱</span>
+                            <input type="number" class="form-control" id="defaultExpectedAmount" value="85" min="0" step="5">
+                        </div>
+                        <div class="form-help">Amount that each student is expected to pay</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Session Timeout (hours)</label>
+                        <input type="number" class="form-control" id="sessionTimeout" value="8" min="1" max="24">
+                        <div class="form-help">How long user sessions remain active</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Inactivity Timeout (minutes)</label>
+                        <input type="number" class="form-control" id="inactivityTimeout" value="10" min="5" max="60">
+                        <div class="form-help">Auto-logout after inactivity</div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="saveSettings()">
+                            <span>💾</span>
+                            Save Settings
+                        </button>
+                        <button class="btn btn-warning" onclick="backupData()">
+                            <span>📦</span>
+                            Backup Data
+                        </button>
+                        <button class="btn btn-danger" onclick="resetSystem()">
+                            <span>⚠️</span>
+                            Reset System
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create Section Modal -->
+    <div class="modal-overlay" id="createSectionModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Section</h3>
+                <button class="modal-close" onclick="closeModal('createSectionModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createSectionForm">
+                    <div class="form-group">
+                        <label for="input_section_name" class="form-label required">Section Name</label>
+                        <input type="text" id="input_section_name" class="form-control" placeholder="e.g., BSIT-4A" required>
+                        <div class="form-help">Must be unique across all sections</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="select_department" class="form-label required">Department</label>
+                        <select id="select_department" class="form-control" required>
+                            <option value="">Select Department</option>
+                            <option value="ICT">ICT</option>
+                            <option value="HTM">HTM</option>
+                            <option value="SHS">SHS</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="textarea_students" class="form-label">Students</label>
+                        <textarea id="textarea_students" class="form-control" rows="8" 
+                                  placeholder="Paste students one per line:&#10;2025001 | Juan Dela Cruz&#10;2025002 | Maria Santos&#10;&#10;Or just names:&#10;Juan Dela Cruz&#10;Maria Santos"></textarea>
+                        <div class="form-help">Format: StudentNo | Name (or just names, one per line)</div>
+                        <div class="stat-change positive">
+                            <span>👥</span>
+                            <span id="auto_count_students">0 students</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('createSectionModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn_preview_section" onclick="previewSection()">Preview Section</button>
+                <button type="button" class="btn btn-success" id="btn_save_section" onclick="saveSection()" disabled>Save Section</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Section Modal -->
+    <div class="modal-overlay" id="previewSectionModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 class="modal-title">Preview Section</h3>
+                <button class="modal-close" onclick="closeModal('previewSectionModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="sectionPreviewContent">
+                    <!-- Preview content will be inserted here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('previewSectionModal')">Edit</button>
+                <button type="button" class="btn btn-success" onclick="confirmSaveSection()">Confirm & Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Treasurer Modal -->
+    <div class="modal-overlay" id="createTreasurerModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Treasurer</h3>
+                <button class="modal-close" onclick="closeModal('createTreasurerModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createTreasurerForm">
+                    <div class="form-group">
+                        <label for="treasurerFullName" class="form-label required">Full Name</label>
+                        <input type="text" id="treasurerFullName" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="treasurerUsername" class="form-label required">Username</label>
+                        <input type="text" id="treasurerUsername" class="form-control" required>
+                        <div class="form-help">Must be unique</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="treasurerPassword" class="form-label required">Password</label>
+                        <div class="form-group-icon">
+                            <input type="password" id="treasurerPassword" class="form-control" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('treasurerPassword')">👁️</button>
+                        </div>
+                        <div class="form-help">Minimum 6 characters</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="treasurerDepartment" class="form-label required">Department</label>
+                        <select id="treasurerDepartment" class="form-control" required>
+                            <option value="">Select Department</option>
+                            <option value="ICT">ICT</option>
+                            <option value="HTM">HTM</option>
+                            <option value="SHS">SHS</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="treasurerSection" class="form-label required">Section</label>
+                        <select id="treasurerSection" class="form-control" required>
+                            <option value="">Select Section</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="treasurerStartDate" class="form-label">Start Date</label>
+                        <input type="date" id="treasurerStartDate" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('createTreasurerModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveTreasurer()">Create Treasurer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="admin.js"></script>
+
+    <script>
+        // Initialize admin dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Require admin authentication
+            const hasAccess = await Auth.requireAuth('Admin');
+            if (!hasAccess) return;
+
+            // Initialize the admin interface
+            await initializeAdmin();
+        });
+    </script>
+</body>
+</html>

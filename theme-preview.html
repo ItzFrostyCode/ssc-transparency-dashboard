@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC Transparency Dashboard - Dark Theme Preview</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="top-bar">
+            <div class="logo-title">
+                <span class="accent-text">💰</span>
+                <span class="logo-accent">SSC Transparency Dashboard</span>
+            </div>
+            <div class="user-info">
+                <span>Admin Dashboard</span>
+                <span class="last-sync">Last sync: Now</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="nav-list">
+                    <div class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <span class="nav-icon">📊</span>
+                            Dashboard
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">🏛️</span>
+                            Sections
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">👥</span>
+                            Treasurers
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📋</span>
+                            Reports
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content Area -->
+            <main class="content-area">
+                <!-- Theme Preview Section -->
+                <section class="page-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Modern Dark Theme Preview</h2>
+                        <button class="btn btn-accent">Orange Accent Button</button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg);">
+                        <!-- Color Palette -->
+                        <div>
+                            <h3>Color Palette</h3>
+                            <div style="display: grid; gap: var(--spacing-sm);">
+                                <div style="background: var(--bg-color); padding: var(--spacing-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-md);">
+                                    Background: #1a1a1a
+                                </div>
+                                <div style="background: var(--card-bg); padding: var(--spacing-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-md);">
+                                    Cards: #2d2d2d
+                                </div>
+                                <div style="background: var(--header-bg); padding: var(--spacing-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-md);">
+                                    Header: #1C1C1D
+                                </div>
+                                <div style="background: var(--accent-orange); color: var(--bg-color); padding: var(--spacing-sm); border-radius: var(--border-radius-md); font-weight: 600;">
+                                    Accent Orange: #FCC86C
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div>
+                            <h3>Button Variants</h3>
+                            <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                                <button class="btn btn-primary">Primary Button</button>
+                                <button class="btn btn-secondary">Secondary Button</button>
+                                <button class="btn btn-accent">Accent Button</button>
+                                <button class="btn btn-success">Success Button</button>
+                                <button class="btn btn-warning">Warning Button</button>
+                                <button class="btn btn-danger">Danger Button</button>
+                                <button class="btn btn-outline">Outline Button</button>
+                            </div>
+                        </div>
+
+                        <!-- Form Elements -->
+                        <div>
+                            <h3>Form Elements</h3>
+                            <div class="form-group">
+                                <label class="form-label required">Input Field</label>
+                                <input type="text" class="form-control" placeholder="Type something..." value="Sample text">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Select Dropdown</label>
+                                <select class="form-control">
+                                    <option>Option 1</option>
+                                    <option selected>Option 2 (Selected)</option>
+                                    <option>Option 3</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Textarea</label>
+                                <textarea class="form-control" rows="3" placeholder="Enter details...">Sample textarea content</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sample Data Table -->
+                <section class="page-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Data Table</h2>
+                        <span class="accent-text">Modern dark design</span>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Section</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2023001</td>
+                                    <td>John Doe</td>
+                                    <td>Computer Science</td>
+                                    <td>₱500.00</td>
+                                    <td><span class="status-active" style="padding: 4px 8px; border-radius: 4px; font-size: 12px;">Paid</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023002</td>
+                                    <td>Jane Smith</td>
+                                    <td>Business Admin</td>
+                                    <td>₱450.00</td>
+                                    <td><span class="status-active" style="padding: 4px 8px; border-radius: 4px; font-size: 12px;">Paid</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2023003</td>
+                                    <td>Mike Johnson</td>
+                                    <td>Engineering</td>
+                                    <td>₱600.00</td>
+                                    <td><span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; background: var(--warning-color); color: white;">Pending</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Typography & Text -->
+                <section class="page-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Typography Scale</h2>
+                    </div>
+                    
+                    <h1>Heading 1 - Primary Text</h1>
+                    <h2>Heading 2 - Secondary Level</h2>
+                    <h3>Heading 3 - Tertiary Level</h3>
+                    <h4>Heading 4 - Fourth Level</h4>
+                    
+                    <p>This is regular paragraph text demonstrating the readable text color against the dark background. The contrast ensures excellent readability while maintaining the modern aesthetic.</p>
+                    
+                    <p class="text-muted" style="color: var(--text-muted);">This is muted text used for secondary information and less important content.</p>
+                    
+                    <p>Key features of this dark theme:</p>
+                    <ul>
+                        <li>Deep charcoal background (#1a1a1a) for reduced eye strain</li>
+                        <li>Medium gray cards (#2d2d2d) for content organization</li>
+                        <li>Orange accent color (#FCC86C) for branding and highlights</li>
+                        <li>Excellent contrast ratios for accessibility compliance</li>
+                        <li>Smooth transitions and hover effects for modern feel</li>
+                    </ul>
+                </section>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

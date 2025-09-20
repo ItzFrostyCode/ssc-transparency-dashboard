@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC Transparency - Class Treasurer Console</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="hamburger-btn" id="btn_hamburger_toggle">☰</button>
+                <div class="logo-title" id="top_title">
+                    🏛️ SSC Transparency — Class Treasurer Console
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <div class="user-info">
+                    <span id="top_user">Loading...</span>
+                    <div class="last-sync" id="top_lastSync">Last Sync: Loading...</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar" id="sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-section="dashboard" id="nav_dashboard">
+                            <span class="nav-icon">📊</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="students" id="nav_students">
+                            <span class="nav-icon">🎓</span>
+                            Students
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="payments" id="nav_payments">
+                            <span class="nav-icon">💰</span>
+                            Payments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="reports" id="nav_reports">
+                            <span class="nav-icon">📈</span>
+                            Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="receipts" id="nav_receipts">
+                            <span class="nav-icon">🧾</span>
+                            Receipts
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Content Area -->
+            <main class="content-area" id="contentArea">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="page-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Dashboard</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="refreshDashboard()">
+                                <span>🔄</span>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section Info -->
+                    <div class="page-section">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
+                            <div>
+                                <h3>Section: <span id="dashboardSection">Loading...</span></h3>
+                                <p>Treasurer: <span id="dashboardTreasurer">Loading...</span></p>
+                                <p>Students: <span id="dashboardStudentCount">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Expected</div>
+                            <div class="stat-value" id="expectedAmount">₱0</div>
+                            <div class="stat-change positive">
+                                <span>💰</span>
+                                <span>Total</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Collected</div>
+                            <div class="stat-value" id="collectedAmount">₱0</div>
+                            <div class="stat-change positive">
+                                <span>✅</span>
+                                <span>Received</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Remaining</div>
+                            <div class="stat-value" id="remainingAmount">₱0</div>
+                            <div class="stat-change negative">
+                                <span>⏳</span>
+                                <span>Outstanding</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Progress</div>
+                            <div class="stat-value" id="progressPercent">0%</div>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="page-section">
+                        <h3>Quick Actions</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-primary btn-lg" id="btn_record_payment" onclick="showRecordPaymentModal()">
+                                <span>💰</span>
+                                Record Payment
+                            </button>
+                            <button class="btn btn-secondary btn-lg" id="btn_print_summary" onclick="printSummary()">
+                                <span>📊</span>
+                                Print Summary
+                            </button>
+                            <button class="btn btn-secondary btn-lg" id="btn_record_handover" onclick="showCashHandoverModal()">
+                                <span>🤝</span>
+                                Record Cash Handover
+                            </button>
+                            <button class="btn btn-outline btn-lg" onclick="generateReceipt()">
+                                <span>🧾</span>
+                                Generate Receipt
+                            </button>
+                        </div>
+                        
+                        <div class="alert alert-info" style="margin-top: var(--spacing-lg);">
+                            <strong>Note:</strong> Cash only. Physical Receipt No required.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Section -->
+                <div id="students-section" class="page-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Students</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-secondary" onclick="refreshStudents()">
+                                <span>🔄</span>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="student_search" placeholder="Search students...">
+                            <select class="form-control" id="studentStatusFilter">
+                                <option value="">All Status</option>
+                                <option value="PAID">Fully Paid</option>
+                                <option value="PARTIAL">Partial Payment</option>
+                                <option value="NOT_PAID">Not Paid</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Students Table (Desktop) -->
+                    <div class="table-container table-responsive">
+                        <table class="table table-striped table-mobile">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Student Name</th>
+                                    <th>Student No</th>
+                                    <th>Given</th>
+                                    <th>Remaining</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                                <tr>
+                                    <td colspan="6" class="loading">Loading students...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Payments Section -->
+                <div id="payments-section" class="page-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Record New Payment</h2>
+                    </div>
+
+                    <form id="paymentForm" class="page-section">
+                        <div class="form-group">
+                            <label for="paymentStudent" class="form-label required">Student</label>
+                            <select id="paymentStudent" class="form-control" required>
+                                <option value="">Select Student</option>
+                            </select>
+                            <div class="form-help">Only students in your section are shown</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input_amount" class="form-label required">Amount (₱)</label>
+                            <input type="number" id="input_amount" class="form-control" placeholder="0" 
+                                   min="5" step="5" required>
+                            <div class="form-help">Must be multiples of 5 (5, 10, 15, 20...)</div>
+                            <div id="amountError" class="form-error" style="display: none;"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paymentDate" class="form-label">Payment Date</label>
+                            <input type="date" id="paymentDate" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Payment Method</label>
+                            <div class="form-control" style="background: var(--background-color); color: var(--text-muted);">
+                                Cash (Fixed)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input_physical_receipt_no" class="form-label required">Physical Receipt No</label>
+                            <input type="text" id="input_physical_receipt_no" class="form-control" 
+                                   placeholder="e.g., R-001, Receipt-123" required>
+                            <div class="form-help">Enter the physical receipt number</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paymentNotes" class="form-label">Notes (optional)</label>
+                            <textarea id="paymentNotes" class="form-control" rows="3" 
+                                      placeholder="Any additional notes..."></textarea>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-success btn-lg" id="btn_save_payment">
+                                <span id="savePaymentText">💾 Save Payment</span>
+                                <span id="savePaymentSpinner" class="spinner" style="display: none;"></span>
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-lg" onclick="clearPaymentForm()">
+                                <span>🗑️</span>
+                                Clear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Reports Section -->
+                <div id="reports-section" class="page-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Reports & Analytics</h2>
+                    </div>
+
+                    <div class="page-section">
+                        <h3>Quick Summary Report</h3>
+                        <div class="form-group">
+                            <label class="form-label">Report Type</label>
+                            <div style="display: flex; gap: var(--spacing-md); align-items: center; flex-wrap: wrap;">
+                                <div class="form-check">
+                                    <input type="radio" id="reportOverall" name="reportType" value="overall" class="form-check-input" checked>
+                                    <label for="reportOverall" class="form-check-label">Overall Summary</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" id="reportMonthly" name="reportType" value="monthly" class="form-check-input">
+                                    <label for="reportMonthly" class="form-check-label">Monthly Report</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" id="reportDetailed" name="reportType" value="detailed" class="form-check-input">
+                                    <label for="reportDetailed" class="form-check-label">Detailed Report</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="monthSelector" style="display: none;">
+                            <label for="reportMonth" class="form-label">Month</label>
+                            <input type="month" id="reportMonth" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Report Format</label>
+                            <div style="display: flex; gap: var(--spacing-md); align-items: center;">
+                                <div class="form-check">
+                                    <input type="radio" id="formatText" name="reportFormat" value="text" class="form-check-input" checked>
+                                    <label for="formatText" class="form-check-label">Text</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" id="formatHtml" name="reportFormat" value="html" class="form-check-input">
+                                    <label for="formatHtml" class="form-check-label">HTML</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-primary" id="btn_print_summary" onclick="generatePrintSummary()">
+                                <span>�</span>
+                                Generate Report
+                            </button>
+                            <button class="btn btn-secondary" onclick="printSummary()">
+                                <span>�🖨️</span>
+                                Print
+                            </button>
+                            <button class="btn btn-secondary" onclick="downloadSummary()">
+                                <span>💾</span>
+                                Download
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="page-section">
+                        <h3>Detailed Reports</h3>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="reportDateFrom" class="form-label">Date From</label>
+                                <input type="date" id="reportDateFrom" class="form-control">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="reportDateTo" class="form-label">Date To</label>
+                                <input type="date" id="reportDateTo" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Format</label>
+                            <div style="display: flex; gap: var(--spacing-md); align-items: center;">
+                                <div class="form-check">
+                                    <input type="radio" id="detailedFormatText" name="detailedFormat" value="text" class="form-check-input" checked>
+                                    <label for="detailedFormatText" class="form-check-label">Text</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" id="detailedFormatHtml" name="detailedFormat" value="html" class="form-check-input">
+                                    <label for="detailedFormatHtml" class="form-check-label">HTML</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" id="detailedFormatCsv" name="detailedFormat" value="csv" class="form-check-input">
+                                    <label for="detailedFormatCsv" class="form-check-label">CSV</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="generateDetailedReport()">
+                                <span>�</span>
+                                Generate Detailed Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="page-section">
+                        <h3>Export Options</h3>
+                        <div class="form-group">
+                            <label for="exportType" class="form-label">Export Type</label>
+                            <select id="exportType" class="form-control">
+                                <option value="students">Students List</option>
+                                <option value="payments">Payments History</option>
+                                <option value="summary">Summary Report</option>
+                            </select>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-success" onclick="exportExcel()">
+                                <span>📊</span>
+                                Export Excel/CSV
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportPDF()">
+                                <span>📄</span>
+                                Export PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Summary Preview -->
+                    <div class="page-section" id="summaryPreview" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>Report Preview</h3>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-secondary" onclick="printSummary()">
+                                    🖨️ Print
+                                </button>
+                                <button class="btn btn-sm btn-secondary" onclick="downloadSummary()">
+                                    💾 Download
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="summaryContent" style="background: var(--background-color); padding: var(--spacing-lg); border-radius: var(--border-radius-md); font-family: monospace; white-space: pre-wrap; max-height: 400px; overflow-y: auto;"></pre>
+                    </div>
+                </div>
+
+                <!-- Receipts Section -->
+                <div id="receipts-section" class="page-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">Receipts & Cash Management</h2>
+                    </div>
+
+                    <div class="page-section">
+                        <h3>Generate Payment Receipt</h3>
+                        <div class="form-group">
+                            <label for="receiptPayment" class="form-label">Select Payment</label>
+                            <select id="receiptPayment" class="form-control">
+                                <option value="">Select a payment to generate receipt</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Receipt Format</label>
+                            <div style="display: flex; gap: var(--spacing-md); align-items: center;">
+                                <div class="form-check">
+                                    <input type="radio" id="receiptFormatText" name="receiptFormat" value="text" class="form-check-input" checked>
+                                    <label for="receiptFormatText" class="form-check-label">Text</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" id="receiptFormatHtml" name="receiptFormat" value="html" class="form-check-input">
+                                    <label for="receiptFormatHtml" class="form-check-label">HTML</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="generatePaymentReceipt()">
+                                <span>🧾</span>
+                                Generate & Print
+                            </button>
+                            <button class="btn btn-secondary" onclick="downloadReceipt()">
+                                <span>�</span>
+                                Download Receipt
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="page-section">
+                        <h3>Cash Handover Management</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-warning" onclick="showCashHandoverModal()">
+                                <span>🤝</span>
+                                Record Cash Handover
+                            </button>
+                            <button class="btn btn-secondary" onclick="viewHandoverHistory()">
+                                <span>📋</span>
+                                View Handover History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Student History Modal -->
+    <div class="modal-overlay" id="studentHistoryModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 class="modal-title" id="studentHistoryTitle">Payment History</h3>
+                <button class="modal-close" onclick="closeModal('studentHistoryModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="studentHistoryContent">
+                    <!-- History content will be inserted here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="printStudentHistory()">
+                    <span>🖨️</span>
+                    Print History
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal('studentHistoryModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Record Payment Modal -->
+    <div class="modal-overlay" id="recordPaymentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Quick Payment Record</h3>
+                <button class="modal-close" onclick="closeModal('recordPaymentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <strong>Quick Record:</strong> Use this for fast payment entry. For detailed entry, use the Payments section.
+                </div>
+                <form id="quickPaymentForm">
+                    <div class="form-group">
+                        <label for="quickPaymentStudent" class="form-label required">Student</label>
+                        <select id="quickPaymentStudent" class="form-control" required>
+                            <option value="">Select Student</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickPaymentAmount" class="form-label required">Amount (₱)</label>
+                        <input type="number" id="quickPaymentAmount" class="form-control" min="5" step="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickReceiptNo" class="form-label required">Physical Receipt No</label>
+                        <input type="text" id="quickReceiptNo" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('recordPaymentModal')">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="saveQuickPayment()">Save Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cash Handover Modal -->
+    <div class="modal-overlay" id="cashHandoverModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Record Cash Handover</h3>
+                <button class="modal-close" onclick="closeModal('cashHandoverModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form_cash_handover">
+                    <div class="form-group">
+                        <label for="handoverAmount" class="form-label required">Amount (₱)</label>
+                        <input type="number" id="handoverAmount" class="form-control" min="0" step="5" required>
+                        <div class="form-help">Total cash amount being handed over</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="custodianName" class="form-label required">Custodian Name</label>
+                        <input type="text" id="custodianName" class="form-control" placeholder="Person receiving the cash" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="handoverNotes" class="form-label">Notes</label>
+                        <textarea id="handoverNotes" class="form-control" rows="3" placeholder="Additional notes..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('cashHandoverModal')">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="saveCashHandover()">Record Handover</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="treasurer.js"></script>
+
+    <script>
+        // Initialize treasurer dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Require treasurer authentication
+            const hasAccess = await Auth.requireAuth('Treasurer');
+            if (!hasAccess) return;
+
+            // Initialize the treasurer interface
+            await initializeTreasurer();
+        });
+
+        // Setup report type toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const reportTypeRadios = document.querySelectorAll('input[name="reportType"]');
+            const monthSelector = document.getElementById('monthSelector');
+            
+            reportTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'monthly') {
+                        monthSelector.style.display = 'block';
+                        document.getElementById('reportMonth').required = true;
+                    } else {
+                        monthSelector.style.display = 'none';
+                        document.getElementById('reportMonth').required = false;
+                    }
+                });
+            });
+            
+            // Set default month to current month
+            const now = new Date();
+            const currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('reportMonth').value = currentMonth;
+        });
+    </script>
+</body>
+</html>

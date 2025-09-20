@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Management - SSC Transparency Dashboard</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .db-management {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+        
+        .action-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .action-card h3 {
+            color: var(--accent-orange);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .action-card.warning {
+            border-color: var(--warning-color);
+            background: rgba(217, 119, 6, 0.1);
+        }
+        
+        .action-card.danger {
+            border-color: var(--error-color);
+            background: rgba(220, 38, 38, 0.1);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: var(--spacing-xs);
+        }
+        
+        .status-online { background-color: var(--success-color); }
+        .status-offline { background-color: var(--error-color); }
+        .status-warning { background-color: var(--warning-color); }
+        
+        .sheet-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+        
+        .sheet-item {
+            background: var(--header-alt-bg);
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--border-color);
+        }
+        
+        .sheet-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .sheet-stats {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+        }
+        
+        .log-output {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-md);
+            font-family: 'Courier New', monospace;
+            font-size: var(--font-size-xs);
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="db-management">
+        <div class="page-section">
+            <div class="section-header">
+                <h1 class="section-title">🛢️ Database Management</h1>
+                <button class="btn btn-secondary" onclick="refreshStatus()">🔄 Refresh Status</button>
+            </div>
+            
+            <!-- Database Status -->
+            <div class="action-card">
+                <h3>📊 Database Status</h3>
+                <div id="databaseStatus">
+                    <p>Loading database status...</p>
+                </div>
+                
+                <div id="sheetsInfo" style="display: none;">
+                    <h4>Available Sheets:</h4>
+                    <div id="sheetsList" class="sheet-list"></div>
+                </div>
+            </div>
+            
+            <!-- Setup Database -->
+            <div class="action-card">
+                <h3>🔧 Setup Database</h3>
+                <p>Create all required database sheets and initialize with default data. Safe to run multiple times.</p>
+                <button class="btn btn-accent" onclick="setupDatabase()">Setup Database</button>
+            </div>
+            
+            <!-- Create Missing Sheets -->
+            <div class="action-card">
+                <h3>📋 Create Database Sheets</h3>
+                <p>Create only missing database sheets without affecting existing data.</p>
+                <button class="btn btn-primary" onclick="createSheets()">Create Missing Sheets</button>
+            </div>
+            
+            <!-- Initialize with Admin -->
+            <div class="action-card warning">
+                <h3>⚙️ Initialize Database</h3>
+                <p>First-time setup with admin account creation. Only works if database is not already initialized.</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md); margin: var(--spacing-md) 0;">
+                    <div class="form-group">
+                        <label class="form-label required">Admin Name</label>
+                        <input type="text" id="adminName" class="form-control" placeholder="Enter admin full name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Username</label>
+                        <input type="text" id="adminUsername" class="form-control" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Password</label>
+                        <div class="form-group-icon">
+                            <input type="password" id="adminPassword" class="form-control" placeholder="Enter secure password">
+                            <button type="button" class="password-toggle" onclick="togglePassword('adminPassword')">👁️</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-warning" onclick="initializeDatabase()">Initialize with Admin</button>
+            </div>
+            
+            <!-- Reset Database -->
+            <div class="action-card danger">
+                <h3>🗑️ Reset Database</h3>
+                <p><strong>DESTRUCTIVE ACTION:</strong> This will delete ALL database sheets except Sheet1. All data will be lost.</p>
+                <button class="btn btn-danger" onclick="resetDatabase()">Reset Database</button>
+            </div>
+            
+            <!-- Enhanced Database Information -->
+            <div class="action-card">
+                <h3>📋 Enhanced Database Information</h3>
+                <p>Get detailed database status including record counts, missing sheets, and comprehensive diagnostics.</p>
+                <button class="btn btn-info" onclick="getEnhancedDatabaseInfo()">Get Detailed Database Info</button>
+            </div>
+            
+            <!-- Manual Functions -->
+            <div class="action-card">
+                <h3>🔧 Manual Script Functions</h3>
+                <p>These functions must be run manually in the Google Apps Script editor for enhanced logging and control:</p>
+                <div class="manual-functions">
+                    <div class="manual-function">
+                        <strong>manualDatabaseSetup()</strong>
+                        <p>Complete database setup with detailed logging and status reports.</p>
+                    </div>
+                    <div class="manual-function">
+                        <strong>manualDatabaseReset()</strong>
+                        <p>Database reset with warnings and detailed logging of what was deleted/preserved.</p>
+                    </div>
+                    <div class="manual-function">
+                        <strong>getDatabaseInfo()</strong>
+                        <p>Comprehensive database diagnostics with full sheet information and record counts.</p>
+                    </div>
+                </div>
+                <p class="manual-note">To run these: Open Google Apps Script → Click function name → Run button</p>
+            </div>
+            <div class="action-card danger">
+                <h3>🔥 Reset Database</h3>
+                <p><strong>WARNING:</strong> This will delete ALL data from database sheets while preserving Sheet1. This action cannot be undone!</p>
+                <div style="margin: var(--spacing-md) 0;">
+                    <label class="form-check">
+                        <input type="checkbox" id="confirmReset" class="form-check-input">
+                        <span class="form-check-label">I understand this will delete all data</span>
+                    </label>
+                </div>
+                <button class="btn btn-danger" onclick="resetDatabase()" disabled id="resetBtn">🗑️ Reset Database</button>
+            </div>
+            
+            <!-- Operation Log -->
+            <div class="action-card">
+                <h3>📝 Operation Log</h3>
+                <div id="operationLog" class="log-output">Ready to perform database operations...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password toggle functionality
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggle = field.parentElement.querySelector('.password-toggle');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                toggle.textContent = '🙈';
+            } else {
+                field.type = 'password';
+                toggle.textContent = '👁️';
+            }
+        }
+        
+        // Reset confirmation
+        document.getElementById('confirmReset').addEventListener('change', function() {
+            document.getElementById('resetBtn').disabled = !this.checked;
+        });
+        
+        // API Base URL - Update this with your Google Apps Script URL
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbyKLtvOKIkbMQm0S1M3wwh4-0kZLTJ6lWnijDlZ0eQKqRVhT40Ry1WTd4bOhqNCOXqB/exec';
+        
+        // Logging function
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('operationLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logElement.textContent += logEntry;
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(`DB Management ${type.toUpperCase()}: ${message}`);
+        }
+        
+        // API call function
+        async function callAPI(action, data = {}) {
+            try {
+                log(`🔄 Calling API: ${action}`);
+                
+                const response = await fetch(API_BASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: action,
+                        ...data
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.status === 'ok') {
+                    log(`✅ ${action} completed successfully`);
+                    return result;
+                } else {
+                    throw new Error(result.message || 'Unknown error');
+                }
+                
+            } catch (error) {
+                log(`❌ ${action} failed: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+        
+        // Refresh database status
+        async function refreshStatus() {
+            try {
+                log('🔍 Checking database status...');
+                const result = await callAPI('checkDatabaseInit');
+                
+                const statusElement = document.getElementById('databaseStatus');
+                const sheetsInfo = document.getElementById('sheetsInfo');
+                
+                if (result.status === 'ok') {
+                    statusElement.innerHTML = `
+                        <p><span class="status-indicator status-online"></span>Database is properly initialized</p>
+                        <p><strong>Sheets:</strong> ${result.data.sheets.length} sheets found</p>
+                        <p><strong>Last checked:</strong> ${new Date().toLocaleString()}</p>
+                    `;
+                    
+                    // Show sheets info
+                    displaySheets(result.data.sheets);
+                    sheetsInfo.style.display = 'block';
+                    
+                } else {
+                    statusElement.innerHTML = `
+                        <p><span class="status-indicator status-offline"></span>Database not initialized</p>
+                        <p><strong>Issue:</strong> ${result.message}</p>
+                        <p><strong>Action needed:</strong> Run database setup or initialization</p>
+                    `;
+                    sheetsInfo.style.display = 'none';
+                }
+                
+            } catch (error) {
+                document.getElementById('databaseStatus').innerHTML = `
+                    <p><span class="status-indicator status-warning"></span>Unable to check database status</p>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+        
+        // Display sheets information
+        function displaySheets(sheets) {
+            const sheetsList = document.getElementById('sheetsList');
+            sheetsList.innerHTML = sheets.map(sheet => `
+                <div class="sheet-item">
+                    <div class="sheet-name">${sheet}</div>
+                </div>
+            `).join('');
+        }
+        
+        // Setup database
+        async function setupDatabase() {
+            try {
+                const result = await callAPI('setupDatabase');
+                log(`✅ Database setup completed. Sheets: ${result.data.sheets.join(', ')}`);
+                await refreshStatus();
+            } catch (error) {
+                log(`❌ Setup failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Create database sheets
+        async function createSheets() {
+            try {
+                const result = await callAPI('createDatabaseSheets');
+                log(`✅ Sheets creation completed. Created: ${result.data.createdSheets.length}, Skipped: ${result.data.skippedSheets.length}`);
+                await refreshStatus();
+            } catch (error) {
+                log(`❌ Create sheets failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialize database
+        async function initializeDatabase() {
+            const adminName = document.getElementById('adminName').value.trim();
+            const adminUsername = document.getElementById('adminUsername').value.trim();
+            const adminPassword = document.getElementById('adminPassword').value;
+            
+            if (!adminName || !adminUsername || !adminPassword) {
+                log('❌ Please fill in all admin fields', 'error');
+                return;
+            }
+            
+            if (adminPassword.length < 8) {
+                log('❌ Password must be at least 8 characters long', 'error');
+                return;
+            }
+            
+            try {
+                const result = await callAPI('initializeDatabase', {
+                    adminName: adminName,
+                    adminUsername: adminUsername,
+                    adminPassword: adminPassword
+                });
+                
+                log(`✅ Database initialized with admin user: ${adminUsername}`);
+                log(`🔑 Admin ID: ${result.data.adminUserId}`);
+                
+                // Clear form
+                document.getElementById('adminName').value = '';
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminPassword').value = '';
+                
+                await refreshStatus();
+                
+            } catch (error) {
+                log(`❌ Initialize failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Reset database
+        async function resetDatabase() {
+            if (!confirm('⚠️ WARNING: This will DELETE ALL database sheets except Sheet1. All data will be lost. Are you sure?')) {
+                return;
+            }
+            
+            if (!confirm('⚠️ FINAL CONFIRMATION: This action cannot be undone. Type YES to confirm.')) {
+                return;
+            }
+            
+            try {
+                const result = await callAPI('resetDatabase');
+                log(`✅ Database reset completed`);
+                log(`🗑️ Deleted sheets: ${result.data.deletedSheets.join(', ')}`);
+                log(`🛡️ Preserved sheets: ${result.data.preservedSheets.join(', ')}`);
+                await refreshStatus();
+            } catch (error) {
+                log(`❌ Reset failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Get enhanced database information
+        async function getEnhancedDatabaseInfo() {
+            try {
+                const result = await callAPI('getDatabaseStatus');
+                const data = result.data;
+                
+                log('📋 === ENHANCED DATABASE INFORMATION ===');
+                log(`🏢 Spreadsheet: ${data.spreadsheetName} (ID: ${data.spreadsheetId})`);
+                log(`🔗 URL: ${data.spreadsheetUrl}`);
+                log(`⚙️ Initialized: ${data.initialized ? '✅ Yes' : '❌ No'}`);
+                
+                if (data.initDate) {
+                    log(`📅 Init Date: ${new Date(data.initDate).toLocaleString()}`);
+                    log(`👤 Init Admin: ${data.initAdmin}`);
+                }
+                
+                log(`📊 Total Sheets: ${data.totalSheets}`);
+                
+                if (data.missingSheets.length > 0) {
+                    log(`⚠️ Missing Required Sheets: ${data.missingSheets.join(', ')}`);
+                }
+                
+                log('📋 Sheet Details:');
+                data.sheets.forEach(sheet => {
+                    const hidden = sheet.isHidden ? ' [HIDDEN]' : '';
+                    log(`  • ${sheet.name}: ${sheet.rowCount} rows, ${sheet.columnCount} cols${hidden}`);
+                });
+                
+                log('📊 Record Counts:');
+                log(`  • Students: ${data.recordCounts.students}`);
+                log(`  • Payments: ${data.recordCounts.payments}`);
+                log(`  • Treasurers: ${data.recordCounts.treasurers}`);
+                
+                log(`🕒 Last Checked: ${new Date(data.lastChecked).toLocaleString()}`);
+                log('📋 === END DATABASE INFORMATION ===');
+                
+            } catch (error) {
+                log(`❌ Failed to get enhanced info: ${error.message}`, 'error');
+            }
+        }
+        
+        // Password toggle function
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const button = field.nextElementSibling;
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                field.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+    </script>
+</body>
+</html>
+        async function resetDatabase() {
+            if (!document.getElementById('confirmReset').checked) {
+                log('❌ Please confirm you understand this will delete all data', 'error');
+                return;
+            }
+            
+            if (!confirm('🚨 FINAL WARNING: This will delete ALL database data except Sheet1. Are you absolutely sure?')) {
+                return;
+            }
+            
+            try {
+                const result = await callAPI('resetDatabase');
+                log(`🔥 Database reset completed. Deleted: ${result.data.deletedSheets.length} sheets, Preserved: ${result.data.preservedSheets.length} sheets`);
+                
+                // Uncheck confirmation
+                document.getElementById('confirmReset').checked = false;
+                document.getElementById('resetBtn').disabled = true;
+                
+                await refreshStatus();
+                
+            } catch (error) {
+                log(`❌ Reset failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Database Management Interface loaded');
+            refreshStatus();
+        });
+    </script>
+</body>
+</html>

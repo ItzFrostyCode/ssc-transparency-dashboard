@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC Transparency Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: rgba(45, 45, 45, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid #404040;
+        }
+        
+        .logo {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #FCC86C;
+        }
+        
+        h1 {
+            color: #FCC86C;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        
+        .form-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 2px solid #404040;
+            color: #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #FCC86C;
+            box-shadow: 0 0 10px rgba(252, 200, 108, 0.3);
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #b0b0b0;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+        
+        .toggle-password:hover {
+            color: #FCC86C;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #FCC86C 0%, #e6b563 100%);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(252, 200, 108, 0.4);
+        }
+        
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #FCC86C;
+            text-align: left;
+        }
+        
+        .success {
+            border-left-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .error {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+        
+        .credentials-hint {
+            background: rgba(252, 200, 108, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #FCC86C;
+        }
+        
+        .spinner {
+            border: 3px solid #404040;
+            border-top: 3px solid #FCC86C;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .dashboard-links {
+            margin-top: 30px;
+        }
+        
+        .dashboard-btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background: rgba(252, 200, 108, 0.2);
+            color: #FCC86C;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 5px;
+            border: 1px solid #FCC86C;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-btn:hover {
+            background: #FCC86C;
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🏛️</div>
+        <h1>SSC Transparency Dashboard</h1>
+        
+
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter username">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-container">
+                    <input type="password" id="password" placeholder="Enter password">
+                    <button type="button" class="toggle-password" onclick="togglePassword()">👁️</button>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn" id="loginBtn">
+                🚀 Login to Dashboard
+            </button>
+        </form>
+        
+        <div id="result" style="display: none;"></div>
+        
+        <div class="dashboard-links" id="dashboardLinks" style="display: none;">
+            <h3>📱 Access Your Dashboard:</h3>
+            <a href="admin/dashboard.html" class="dashboard-btn">👑 Admin Dashboard</a>
+            <a href="treasurer/dashboard.html" class="dashboard-btn">💰 Treasurer Dashboard</a>
+        </div>
+        
+        <div style="margin-top: 30px; font-size: 0.9em; color: #888;">
+            <p>💡 <strong>Tip:</strong> If testing locally, CORS might block the API.</p>
+            <p>🌐 For full functionality, deploy to a web server.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyKLtvOKIkbMQm0S1M3wwh4-0kZLTJ6lWnijDlZ0eQKqRVhT40Ry1WTd4bOhqNCOXqB/exec';
+        
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.toggle-password');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await performLogin();
+        });
+        
+        async function performLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+            const loginBtn = document.getElementById('loginBtn');
+            const dashboardLinks = document.getElementById('dashboardLinks');
+            
+            if (!username || !password) {
+                showResult('error', '❌ Please enter both username and password');
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="spinner"></span>Logging in...';
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '⏳ Connecting to server...';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'login',
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.status === 'ok') {
+                    // Store session
+                    localStorage.setItem('ssc_session', JSON.stringify({
+                        token: result.data.token,
+                        role: result.data.role,
+                        name: result.data.name,
+                        username: result.data.username,
+                        department: result.data.department
+                    }));
+                    
+                    showResult('success', `
+                        <h3>✅ LOGIN SUCCESSFUL!</h3>
+                        <p><strong>Welcome:</strong> ${result.data.name}</p>
+                        <p><strong>Role:</strong> ${result.data.role}</p>
+                        <p><strong>Department:</strong> ${result.data.department}</p>
+                        <p><strong>Session:</strong> Active 🟢</p>
+                    `);
+                    
+                    dashboardLinks.style.display = 'block';
+                    
+                    // Auto-redirect based on role after 2 seconds
+                    setTimeout(() => {
+                        if (result.data.role === 'Admin') {
+                            window.location.href = 'admin/dashboard.html';
+                        } else if (result.data.role === 'Treasurer') {
+                            window.location.href = 'treasurer/dashboard.html';
+                        }
+                    }, 2000);
+                    
+                } else {
+                    showResult('error', `❌ ${result.message || 'Login failed'}`);
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    showResult('error', `
+                        <h3>🌐 Network Error</h3>
+                        <p>Cannot connect to server. This might be:</p>
+                        <ul>
+                            <li>CORS restriction (normal for localhost)</li>
+                            <li>Internet connection issue</li>
+                            <li>Server temporarily unavailable</li>
+                        </ul>
+                        <p><strong>Try:</strong> Deploy to Netlify or GitHub Pages for full functionality.</p>
+                    `);
+                } else {
+                    showResult('error', `❌ ${error.message}`);
+                }
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '🚀 Login to Dashboard';
+            }
+        }
+        
+        function showResult(type, message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = message;
+            resultDiv.style.display = 'block';
+        }
+        
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            const session = localStorage.getItem('ssc_session');
+            if (session) {
+                try {
+                    const sessionData = JSON.parse(session);
+                    showResult('success', `
+                        <h3>🔄 Session Found</h3>
+                        <p>Welcome back, ${sessionData.name}!</p>
+                        <p>Role: ${sessionData.role}</p>
+                    `);
+                    document.getElementById('dashboardLinks').style.display = 'block';
+                } catch (e) {
+                    localStorage.removeItem('ssc_session');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
